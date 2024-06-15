@@ -2,13 +2,15 @@
   <q-page class="flex justify-center">
     <q-list class="list">
       <q-expansion-item
-        v-for="(item, index) in categories" :key="index"
+        v-for="(item, index) in categories"
+        :key="index"
         :label="item.category"
         default-opened
         class="q-mt-md"
       >
         <PostPreviewComponent
-          v-for="post in item.posts" :key="post.id"
+          v-for="post in item.posts"
+          :key="post.id"
           :post="post"
         />
       </q-expansion-item>
@@ -17,30 +19,30 @@
 </template>
 
 <script>
-import { API_ROUTES } from 'core_app/api_routes'
-import { defineAsyncComponent } from 'vue'
+import { API_ROUTES } from "core_app/api_routes";
+import { defineAsyncComponent } from "vue";
 
 export default {
-  name: 'CategoriesPostsPage',
+  name: "CategoriesPostsPage",
   components: {
-    PostPreviewComponent: defineAsyncComponent(() => import('core_app/PostPreviewComponent.vue')),
+    PostPreviewComponent: defineAsyncComponent(() =>
+      import("core_app/PostPreviewComponent.vue")
+    ),
   },
-  data () {
+  data() {
     return {
-      categories: []
+      categories: [],
+    };
+  },
+  async mounted() {
+    try {
+      const { data } = await this.$api.get(API_ROUTES.POST_CATEGORIESPOSTS);
+      this.categories = data;
+    } catch {
+      this.$notify.fail();
     }
   },
-  async mounted () {
-    try {
-      const { data } = await this.$api.get(API_ROUTES.POST_CATEGORIESPOSTS)
-      this.categories = data
-      console.log(data)
-    }
-    catch {
-      this.$notify.fail()
-    }
-  }
-}
+};
 </script>
 
 <style lang="sass" scoped>

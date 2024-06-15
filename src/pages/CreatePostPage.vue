@@ -50,7 +50,12 @@
           navigation
           infinite
         >
-          <q-carousel-slide v-for="(media, index) in medias" :key="index" :name="index" :img-src="media.value" />
+          <q-carousel-slide
+            v-for="(media, index) in medias"
+            :key="index"
+            :name="index"
+            :img-src="media.value"
+          />
         </q-carousel>
       </q-card-section>
 
@@ -62,65 +67,68 @@
 </template>
 
 <script>
-import { API_ROUTES } from 'core_app/api_routes'
-import { getBase64 } from 'core_app/js_utils'
-import { rules } from 'core_app/rules'
+import { API_ROUTES } from "core_app/api_routes";
+import { getBase64 } from "core_app/js_utils";
+import { rules } from "core_app/rules";
 
 export default {
-  name: 'CreatePostPage',
-  data () {
+  name: "CreatePostPage",
+  data() {
     return {
       category: null,
       title: null,
-      content: '',
+      content: "",
       filesImages: null,
       medias: [],
-      slide: 1,
+      slide: 0,
       rules,
     };
   },
   methods: {
     async createPost() {
-      this.$refs.category.validate()
-      this.$refs.title.validate()
-      let hasError = false
-      hasError = this.$refs.category.hasError ||
-        this.$refs.title.hasError
-      if(hasError) {
-        return
+      this.$refs.category.validate();
+      this.$refs.title.validate();
+      let hasError = false;
+      hasError = this.$refs.category.hasError || this.$refs.title.hasError;
+      if (hasError) {
+        return;
       }
 
       try {
-        await this.$api.post(`${API_ROUTES.POST_CREATE}`, { category: this.category, title: this.title, content: this.content, medias: this.medias })
-        this.$router.push('/my-posts')
-      }
-      catch {
-        this.$notify.fail()
+        await this.$api.post(`${API_ROUTES.POST_CREATE}`, {
+          category: this.category,
+          title: this.title,
+          content: this.content,
+          medias: this.medias,
+        });
+        this.$router.push("/my-posts");
+      } catch {
+        this.$notify.fail();
       }
     },
 
-    onRejected (rejectedEntries) {
+    onRejected(rejectedEntries) {
       this.$q.notify({
-        type: 'negative',
-        message: `${rejectedEntries.length} file(s) did not pass validation constraints`
-      })
-    }
+        type: "negative",
+        message: `${rejectedEntries.length} file(s) did not pass validation constraints`,
+      });
+    },
   },
   watch: {
-    filesImages (value) {
-      if(!value) {
-        this.medias = []
-        return
+    filesImages(value) {
+      if (!value) {
+        this.medias = [];
+        return;
       }
 
-      this.medias = []
+      this.medias = [];
       value.forEach(async (fileImage) => {
-        const base64 = await getBase64(fileImage)
-        this.medias.push({ type: 'img', value: base64 })
+        const base64 = await getBase64(fileImage);
+        this.medias.push({ type: "img", value: base64 });
       });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="sass" scoped>
@@ -128,4 +136,3 @@ export default {
   width: 60vw
   height: 100%
 </style>
-
